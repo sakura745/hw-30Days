@@ -60,14 +60,15 @@ namespace ORB {
         }
         const float factor = HISTO_LENGTH / 360.0f;
 
-//        int bestid = -1;
-//        double mindis = DBL_MAX;
-//        for (size_t i = 0; i < matches.size(); i++) {
-//            if (matches[i].distance < mindis) {
-//                mindis = matches[i].distance;
-//                bestid = i;
-//            }
-//        }
+        //取出描述子最小距离，作为约束
+        size_t bestid = -1;
+        float mindis = FLT_MAX;
+        for (size_t i = 0; i < matches.size(); i++) {
+            if (matches[i].distance < mindis) {
+                mindis = matches[i].distance;
+                bestid = i;
+            }
+        }
 
         //遍历暴力匹配的匹配数据
         for (size_t i1 = 0, iend = matches.size(); i1 < iend; i1++) {
@@ -82,17 +83,21 @@ namespace ORB {
             rotHist[bin].push_back(i1);
         }
 
-        int ind1=-1;
-        int ind2=-1;
-        int ind3=-1;
-        ComputeOneMaxima(rotHist,HISTO_LENGTH,ind1);//最高的直方图
-//        ComputeThreeMaxima(rotHist,HISTO_LENGTH,ind1,ind2,ind3);//前三高的直方图
+
+        int ind1 = -1;
+        int ind2 = -1;
+        int ind3 = -1;
+//        ComputeOneMaxima(rotHist,HISTO_LENGTH,ind1);//最高的直方图
+        ComputeThreeMaxima(rotHist,HISTO_LENGTH,ind1,ind2,ind3);//前三高的直方图
         for (int i = 0; i < HISTO_LENGTH; i++) {
-//            if(i==ind1 || i==ind2 || i==ind3) {
-            if (i == ind1) {
+            if(i==ind1 || i==ind2 || i==ind3) {
+//            if (i == ind1) {
                 for (size_t j = 0, jend = rotHist[i].size(); j < jend; j++) {
                     int idx1 = rotHist[i][j];
-                    good_matches.push_back(matches[idx1]);
+
+                    //增加约束
+                    if (matches[idx1].distance <= std::max(2 * matches[bestid].distance, 30.0f))
+                        good_matches.push_back(matches[idx1]);
                 }
             }
         }
