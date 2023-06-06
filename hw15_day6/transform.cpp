@@ -15,7 +15,7 @@ int main() {
     // 构建旋转矩阵R_wc
     Eigen::AngleAxisf rotation_vector1(45 * M_PI / 180, Eigen::Vector3f::UnitX());
     Eigen::AngleAxisf rotation_vector2(30 * M_PI / 180, Eigen::Vector3f::UnitY());
-    auto rotation_vector3 = rotation_vector1 * rotation_vector2;
+    auto rotation_vector3 = rotation_vector2 * rotation_vector1;
     auto R_wc = rotation_vector3.toRotationMatrix();
 
     // 构建变换矩阵T_wc
